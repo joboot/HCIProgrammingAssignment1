@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 
   function Square(props){
+    //This adds the css property of winning-square onto the square if it is a winning square. Be sure to look at index.css to see the winning-square property I added
     return (
       <button className={'square ' + (props.isWinning ? "winning-square" : null)} onClick={props.onClick}>
         {props.value}
@@ -11,6 +12,8 @@ import './index.css'
   }
   class Board extends React.Component {
     renderSquare(i) {
+      //isWinning is a key for whether or not a square is a winning square
+      //the .includes is a javascript method that determines whether an array includes a certain value among its entries, returning true or false as appropriate
       return (
         <Square 
           isWinning={this.props.winningSquares.includes(i)}
@@ -21,6 +24,7 @@ import './index.css'
       );
     }
 
+    //loops through to create three squares starting with the value passed through
     renderSquares(j) {
       let squares = [];
       
@@ -30,10 +34,12 @@ import './index.css'
       return squares;
     }
 
+    //Returns the div for each board row
     renderRow(i) {
       return <div className="board-row">{this.renderSquares(i)}</div>;
     }
-  
+    
+    //Sets up the rendering of each row
     render() {
       return (
         <div>
@@ -46,6 +52,7 @@ import './index.css'
   }
   
   class Game extends React.Component {
+    //Added isDescending for a value for the sort button to look at
     constructor(props){
       super(props)
       this.state = {
@@ -59,6 +66,7 @@ import './index.css'
     }
 
     handleClick(i) {
+      //Array of locations that the squares can be in (column, row)
       const locations = [
         [1, 1],
         [2, 1],
@@ -81,6 +89,7 @@ import './index.css'
 
       squares[i] = this.state.xIsNext ? 'X' : 'O';
 
+      //Had to concat squares and location into the history
       this.setState({
         history: history.concat([{
           squares: squares,
@@ -98,6 +107,7 @@ import './index.css'
       });
     }
 
+    //function to sort moves either by descending or ascending
     sortMoves() {
       this.setState({
         isDescending: !this.state.isDescending
@@ -108,10 +118,14 @@ import './index.css'
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
+
+      //Adds the location onto each description of the move buttons
       const moves = history.map((step, move)=>{
         const desc = move ?
           'Go to move #' + move + " Location: column " + history[move].location[0] + ", row " + history[move].location[1] :
           'Go to game start';
+
+        //Put a <b></b> tag around description to bolden if it is current step, else just no bold
         return (
           <li key={move}>
             <button onClick={() => this.jumpTo(move)}>{move == this.state.stepNumber ? <b>{desc}</b> : desc}</button>
@@ -123,12 +137,15 @@ import './index.css'
 
       if(winner){
         status = 'Winner: ' + winner.player;
+      //if no squares are null and there is not winner, its a draw
       } else if (!current.squares.includes(null)) {
         status = "Draw!";
       } else {
         status = 'Next player: ' + (this.state.xIsNext ? 'X': 'O');
       }
-
+      //Added winning squares key to the board
+      //Also added the list being able to be sorted by descending or ascending through a button that is utilizing the sortMoves() function
+      //The array function moves.reverse just reverses the order of the array, so it easily switches to ascending
       return (
         <div className="game">
           <div className="game-board">
